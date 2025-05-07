@@ -1,0 +1,34 @@
+{
+	"version": 1,
+	"base_image": "codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04",
+	"post_install": true,
+	"options": {
+		"registry_host_arg": true,
+		"git_ask_pass": true
+	},
+	"installers": {
+		"apt": {
+			"packages": [
+				{
+					"name": "libboost-all-dev",
+					"version": "1.71.0.0ubuntu2"
+				}
+			],
+			"install_software_properties_common": true
+		},
+		"pip": {
+			"packages": [
+				{
+					"name": "allensdk",
+					"version": "2.15.1"
+				},
+				{
+					"name": "pybind11",
+					"version": "2.13.6"
+				}
+			],
+			"options": {},
+			"pre_install_options": {}
+		}
+	}
+}
