@@ -5,7 +5,7 @@ set -e
 pip install -e git+https://github.com/AllenInstitute/tree_comparison.git#egg=tree_comparison
 
 # install updated version of code-server
-VERSION=4.99.4
+VERSION=4.100.0
 mkdir /.code-server
 cd /.code-server
 curl -fL "https://github.com/coder/code-server/releases/download/v$VERSION/code-server-$VERSION-linux-amd64.tar.gz" \

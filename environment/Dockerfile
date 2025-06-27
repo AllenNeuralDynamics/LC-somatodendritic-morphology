@@ -1,4 +1,4 @@
-# hash:sha256:953d7c4cdd65dc87c89382e21701b0f8909a0e7f0aaa323c7664be99639fcfb7
+# hash:sha256:f60ca979177f0410b346df229e8ffaeb666b615ad63c43e2cbc0c86d5a2ce800
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04
 
@@ -15,7 +15,10 @@ RUN apt-get update \
 
 RUN pip install -U --no-cache-dir \
     allensdk==2.15.1 \
-    pybind11==2.13.6
+    k3d==2.16.1 \
+    pybind11==2.13.6 \
+    trimesh==4.6.9 \
+    umap-learn==0.5.7
 
 COPY postInstall /
 RUN /postInstall

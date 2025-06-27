@@ -2,6 +2,10 @@
 	"version": 1,
 	"attached_datasets": [
 		{
+			"id": "752e23bc-cd12-4bbd-b473-c7b1e905b1f9",
+			"mount": "lc_meshes"
+		},
+		{
 			"id": "90037b0e-b629-4ad0-b986-20d6c85a7809",
 			"mount": "648434_12_5_24"
 		},
