@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import numpy as np
+from glob import glob
 
 from joblib import Memory
 
@@ -9,6 +10,34 @@ from neuron_morphology.morphology import Morphology
 
 import tree_comparison.tree_compare as tc
 
+def get_dend_radii(m):
+    morpho_df = pd.DataFrame.from_records(m._nodes).T
+    points = morpho_df[["x", "y", "z"]].values
+    # center on soma rather than centroid
+    points_centered = points[1:] - points[0]
+    # np.cov would mean subtract
+    cov = points_centered.T @ points_centered / (points_centered.shape[0]-1)
+    eigenvalues, eigenvectors = np.linalg.eig(cov)
+    eigenvalues.sort()
+    return eigenvalues**0.5
+    
+def load_all():
+    morphos = {}
+    records = []
+
+    files = glob("/data/*/Complete_annotated/*.json")[:]
+    for file in files:
+        try:
+            morphos[file], soma = load_morphology_and_soma(file)
+            soma["file"] = file
+            records.append(soma)
+        except KeyError as e:
+            pass
+
+    soma_df = pd.concat(records)
+    soma_df["zz"] = np.minimum(soma_df["z"], 11400-soma_df["z"])
+    soma_df["subject"] = [x.split("/")[2].replace("exaspim_","").split("_")[0] for x in soma_df["file"]]
+    return morphos, soma_df
 
 def load_morphology_and_soma(swc_file):
     # check if json or swc
@@ -66,7 +95,7 @@ def load_morphology(swc_file):
 tc.morphology_from_swc = load_morphology
 
 
-memory = Memory("/scratch/cache", verbose=0)
+memory = Memory("/scratch/.cache", verbose=0)
 
 @memory.cache
 def compare(paths_tuple, simFunc="convex"):
