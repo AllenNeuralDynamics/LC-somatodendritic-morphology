@@ -10,8 +10,8 @@ from neuron_morphology.morphology import Morphology
 
 import tree_comparison.tree_compare as tc
 
-def get_dend_radii(m):
-    morpho_df = pd.DataFrame.from_records(m._nodes).T
+def get_dend_radii(nodes):
+    morpho_df = pd.DataFrame.from_records(nodes).T
     points = morpho_df[["x", "y", "z"]].values
     # center on soma rather than centroid
     points_centered = points[1:] - points[0]
