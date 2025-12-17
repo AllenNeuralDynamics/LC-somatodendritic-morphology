@@ -4,18 +4,10 @@
 	"post_install": true,
 	"options": {
 		"registry_host_arg": true,
-		"git_ask_pass": true
+		"git_ask_pass": true,
+		"mount_secrets": true
 	},
 	"installers": {
-		"apt": {
-			"packages": [
-				{
-					"name": "libboost-all-dev",
-					"version": "1.71.0.0ubuntu2"
-				}
-			],
-			"install_software_properties_common": true
-		},
 		"pip": {
 			"packages": [
 				{
@@ -27,16 +19,32 @@
 					"version": "2.16.1"
 				},
 				{
-					"name": "pybind11",
-					"version": "2.13.6"
+					"name": "matplotlib",
+					"version": "3.4.2"
 				},
 				{
-					"name": "trimesh",
-					"version": "4.6.9"
+					"name": "pandas",
+					"version": "1.5.3"
 				},
 				{
-					"name": "umap-learn",
-					"version": "0.5.7"
+					"name": "pip",
+					"version": "25.3"
+				},
+				{
+					"name": "s3fs",
+					"version": "2021.11.0"
+				},
+				{
+					"name": "scikit-image",
+					"version": "0.24.0"
+				},
+				{
+					"name": "scipy",
+					"version": "1.13.1"
+				},
+				{
+					"name": "zarr",
+					"version": "2.18.2"
 				}
 			],
 			"options": {},

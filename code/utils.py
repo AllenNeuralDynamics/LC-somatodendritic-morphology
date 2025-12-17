@@ -238,3 +238,25 @@ def two_view_plot(soma_df, embedding, n, s=20, **kwargs):
         a.set_aspect('equal')
     ax[0].set_title('Coronal')
     ax[1].set_title('Sagittal')
+
+
+def two_view_plot_df(soma_df, col, s=20, **kwargs):
+    # create colorbar axis
+
+    # two subplots, one for xy and one for zy
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+    ax[1].scatter(soma_df["x"], -soma_df["y"], c=soma_df[col], s=s, **kwargs)
+    ax[0].scatter(soma_df["zz"], -soma_df["y"], c=soma_df[col], s=s, **kwargs)
+
+    # Create shared colorbar
+
+    # Add colorbar to the right of the second subplot
+    divider = make_axes_locatable(ax[1])
+    cax = divider.append_axes("right", size="5%", pad=0.1)
+
+    plt.colorbar(ax[1].collections[0], cax=cax, label=col,)
+    for a in ax:
+        a.set_axis_off()
+        a.set_aspect('equal')
+    ax[0].set_title('Coronal')
+    ax[1].set_title('Sagittal')
