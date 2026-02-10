@@ -3,12 +3,10 @@ import json
 import numpy as np
 from glob import glob
 
-from joblib import Memory
 
 from neuron_morphology.constants import AXON, BASAL_DENDRITE, APICAL_DENDRITE, SOMA
 from neuron_morphology.morphology import Morphology
 
-import tree_comparison.tree_compare as tc
 
 def get_dend_radii(nodes):
     morpho_df = pd.DataFrame.from_records(nodes).T
@@ -89,49 +87,6 @@ def load_morphology(swc_file):
     else:
         raise ValueError("Unsupported file format. Please provide a SWC or JSON file.")
 
-
-# from neuron_morphology.swc_io import morphology_from_swc
-# # monkey patch this function to use load_morphology
-tc.morphology_from_swc = load_morphology
-
-
-memory = Memory("/scratch/.cache", verbose=0)
-
-@memory.cache
-def compare(paths_tuple, simFunc="convex"):
-    """
-    Compare two trees and return the result.
-    """
-    path1, path2 = paths_tuple  # Unpack the tuple of paths
-    try:
-        result = tc.compare_two_trees(
-            path1, 
-            path2, 
-            simFunc=simFunc,
-            maxDepth=1,
-            orientation=0,
-            compartments=[3],
-            valid_set_dict="",
-            partition_length=1/2000,
-            angle_threshold=None, 
-            segment_threshold=None,
-            morphology_from_swc=load_morphology
-        )
-        distance, norm_distance = result[:2]
-        return {
-            "file1": path1,
-            "file2": path2,
-            "distance": distance,
-            "norm_distance": norm_distance
-        }
-    except KeyError as e:
-        print(f"Error comparing {path1} and {path2}: {e}")
-        return {
-            "file1": path1,
-            "file2": path2,
-            "distance": None,
-            "norm_distance": None
-        }
 
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
@@ -240,23 +195,26 @@ def two_view_plot(soma_df, embedding, n, s=20, **kwargs):
     ax[1].set_title('Sagittal')
 
 
-def two_view_plot_df(soma_df, col, s=20, **kwargs):
-    # create colorbar axis
+def two_view_plot_df(df, col, axes, s=20, mesh=None, **kwargs):
+    fig, ax = plt.subplots(1, 2, figsize=(9, 5))
+    if mesh:
+        ax[0].scatter(mesh.vertices.T[0], mesh.vertices.T[1], c='gray', s=1, alpha=0.05)
+        ax[1].scatter(mesh.vertices.T[2], mesh.vertices.T[1], c='gray', s=1, alpha=0.05)
+    ax[0].scatter(*df[[axes[0],axes[1]]].values.T, c=df[col], s=s, **kwargs)
+    ax[1].scatter(*df[[axes[2],axes[1]]].values.T, c=df[col], s=s, **kwargs)
 
-    # two subplots, one for xy and one for zy
-    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-    ax[1].scatter(soma_df["x"], -soma_df["y"], c=soma_df[col], s=s, **kwargs)
-    ax[0].scatter(soma_df["zz"], -soma_df["y"], c=soma_df[col], s=s, **kwargs)
-
-    # Create shared colorbar
-
-    # Add colorbar to the right of the second subplot
     divider = make_axes_locatable(ax[1])
     cax = divider.append_axes("right", size="5%", pad=0.1)
 
-    plt.colorbar(ax[1].collections[0], cax=cax, label=col,)
+    plt.colorbar(ax[1].collections[-1], cax=cax, label=col,)
     for a in ax:
         a.set_axis_off()
         a.set_aspect('equal')
-    ax[0].set_title('Coronal')
-    ax[1].set_title('Sagittal')
+    ax[0].set_title('Sagittal')
+    ax[1].set_title('Coronal')
+
+
+def plot_projection(axes, ax):
+    # # ax1.scatter(allspatial[:, 0], allspatial[:, 1], c=X_c[:, k], s=s, edgecolor='k', linewidth=0.1, cmap='Greys')
+    # plotting.scatter_with_jitter(ax1, allspatial, X_c[:, k], direction='s', s=s, lw=0.1,scl_jitter=0.05, ascending=False, cmap ='coolwarm')
+    ax.set_aspect('equal')
