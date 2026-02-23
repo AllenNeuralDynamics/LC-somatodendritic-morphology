@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"base_image": "codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04",
+	"base_image": "codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04",
 	"post_install": true,
 	"options": {
 		"registry_host_arg": true,
@@ -12,27 +12,31 @@
 			"packages": [
 				{
 					"name": "allensdk",
-					"version": "2.15.1"
+					"version": "2.16.2"
+				},
+				{
+					"name": "brainrender",
+					"version": "2.1.16"
 				},
 				{
 					"name": "k3d",
-					"version": "2.16.1"
+					"version": "2.17.0"
 				},
 				{
 					"name": "matplotlib",
-					"version": "3.4.2"
+					"version": "3.10.8"
+				},
+				{
+					"name": "neuron-morphology",
+					"version": "1.2.2"
 				},
 				{
 					"name": "pandas",
 					"version": "1.5.3"
 				},
 				{
-					"name": "pip",
-					"version": "25.3"
-				},
-				{
 					"name": "s3fs",
-					"version": "2021.11.0"
+					"version": "2026.2.0"
 				},
 				{
 					"name": "scikit-image",
@@ -40,14 +44,16 @@
 				},
 				{
 					"name": "scipy",
-					"version": "1.13.1"
+					"version": "1.10.1"
 				},
 				{
 					"name": "zarr",
 					"version": "2.18.2"
 				}
 			],
-			"options": {},
+			"options": {
+				"upgrade_strategy": "only-if-needed"
+			},
 			"pre_install_options": {}
 		}
 	}

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# fix weird pkg_resources bug (updated as a allensdk indirect dep for some reason)
+# pip install setuptools==61.2.0
 # must be in postinstall so pybind11 is already installed
-pip install -e git+https://github.com/AllenNeuralDynamics/aind-exaspim-soma-detection@319f7c616fc98194d449f0063b8dc8ef7729962c#egg=aind-exaspim-soma-detection --no-deps
+pip install git+https://github.com/AllenNeuralDynamics/aind-exaspim-soma-detection@319f7c616fc98194d449f0063b8dc8ef7729962c#egg=aind-exaspim-soma-detection --no-deps
 
 
 # install updated version of code-server

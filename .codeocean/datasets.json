@@ -6,10 +6,6 @@
 			"mount": "exaSPIM_648434_2023-08-29_15-00-36_fusion_2023-09-22"
 		},
 		{
-			"id": "752e23bc-cd12-4bbd-b473-c7b1e905b1f9",
-			"mount": "lc_meshes"
-		},
-		{
 			"id": "90037b0e-b629-4ad0-b986-20d6c85a7809",
 			"mount": "648434_12_5_24"
 		},
@@ -24,6 +20,10 @@
 		{
 			"id": "ae3d3b06-a47e-4fed-bff6-ff3ed35db961",
 			"mount": "lc_image_space_reconstructions"
+		},
+		{
+			"id": "c712751d-f744-4fe8-9657-93a7084eab22",
+			"mount": "LC_percentile_meshes"
 		},
 		{
 			"id": "c8548568-22c1-4327-a2c9-410b9ccb33ba",

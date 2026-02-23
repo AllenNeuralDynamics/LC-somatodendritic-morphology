@@ -1,21 +1,21 @@
-# hash:sha256:da844bb57e48c980993fab3f2504dddcfac39d2676e9b2ab5ad4a18e5070b36e
+# hash:sha256:76129fa2abb739ccae574dab8f8385c3d32f86b1d8c9b1806958bf246d5c70a2
 ARG REGISTRY_HOST
-FROM $REGISTRY_HOST/codeocean/jupyterlab:3.6.1-miniconda4.12.0-python3.9-ubuntu20.04
+FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GIT_ASKPASS
 COPY git-askpass /
 
-RUN pip install -U --no-cache-dir \
-    pip==25.3
-RUN pip install -U --no-cache-dir \
-    allensdk==2.15.1 \
-    k3d==2.16.1 \
-    matplotlib==3.4.2 \
+RUN pip install -U --no-cache-dir --upgrade-strategy=only-if-needed \
+    allensdk==2.16.2 \
+    brainrender==2.1.16 \
+    k3d==2.17.0 \
+    matplotlib==3.10.8 \
+    neuron-morphology==1.2.2 \
     pandas==1.5.3 \
-    s3fs==2021.11.0 \
+    s3fs==2026.2.0 \
     scikit-image==0.24.0 \
-    scipy==1.13.1 \
+    scipy==1.10.1 \
     zarr==2.18.2
 
 COPY postInstall /
