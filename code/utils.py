@@ -19,14 +19,14 @@ def get_dend_radii(nodes):
     eigenvalues.sort()
     return eigenvalues**0.5
     
-def load_all():
+def load_all(axon_radius=0):
     morphos = {}
     records = []
 
     files = glob("/data/*/Complete_annotated/*.json")[:]
     for file in files:
         try:
-            morphos[file], soma = load_morphology_and_soma(file)
+            morphos[file], soma = load_morphology_and_soma(file, axon_radius=axon_radius)
             soma["file"] = file
             records.append(soma)
         except KeyError as e:
@@ -37,7 +37,7 @@ def load_all():
     soma_df["subject"] = [x.split("/")[2].replace("exaspim_","").split("_")[0] for x in soma_df["file"]]
     return morphos, soma_df
 
-def load_morphology_and_soma(swc_file):
+def load_morphology_and_soma(swc_file, axon_radius=0):
     # check if json or swc
     if swc_file.endswith('.json'):
         # Load the morphology from a JSON file
@@ -53,9 +53,16 @@ def load_morphology_and_soma(swc_file):
             "parentNumber": "parent",
         }
         soma = pd.DataFrame([soma]).assign(type=SOMA)
-        df = pd.concat([soma, dendrites])
+        if axon_radius > 0:
+            axons = pd.DataFrame(neuron["axon"]).replace(-1, 0).assign(type=AXON)
+            coords = ["x","y","z"]
+            axons = axons[np.linalg.norm(axons[coords].values - soma[coords].values, axis=1) < axon_radius]
+            df = pd.concat([soma, dendrites, axons])
+        else:
+            df = pd.concat([soma, dendrites])
         # mirror images of R hemisphere cells
-        df["z"] = np.minimum(df["z"], 11400-df["z"])
+        if neuron["soma"]["z"] > 5700:
+            df["z"] = 11400-df["z"]
         records = df.rename(columns=columns).to_dict(orient="records")
         return Morphology(records, node_id_cb=lambda node: node["id"], parent_id_cb=lambda node: node["parent"]), soma
 
@@ -108,6 +115,31 @@ def plot_morphology(morphology, ax, coords='xy', **kwargs):
 
     ax.scatter(*coord_arrays, s=0.1, **kwargs)
     ax.set_aspect('equal')
+
+def plot_morphology_lines(morphology, ax, coords='xy', node_types=None, **kwargs):
+    # slow
+    # for c in morphology.get_compartments():
+    #     ax.plot([c[0][x], c[1][x]], [c[0][y], c[1][y]], **kwargs)
+
+    x, y = coords
+    for s in morphology.get_segment_list():
+        start = s[0]
+        if node_types is not None and start["type"] not in node_types:
+            continue
+        if 0 in morphology.ancestor_ids([start["id"]])[0]:
+        # if True:
+            # segment list bug skips start nodes
+            s = [morphology.parent_of(start)] + s
+            ax.plot([n[x] for n in s], [n[y] for n in s], **kwargs)
+
+            # can't use gaps with nonuniform spacing
+            # nodes = s
+            # X = np.array([[node[dim] for node in nodes] for dim in coords])
+            # max_dist = 200
+            # jumps = np.flatnonzero(np.linalg.norm(X[:,1:]-X[:,:-1], axis=0) > max_dist) + 1
+            # X = np.insert(X, jumps, np.nan, axis=1)
+            # ax.plot(*X, **kwargs)
+
 
 def create_morphology_scatter_plot(embedding, morphology_dict, files, **plot_args):
     # Create a large figure
@@ -195,20 +227,21 @@ def two_view_plot(soma_df, embedding, n, s=20, **kwargs):
     ax[1].set_title('Sagittal')
 
 
-def two_view_plot_df(df, col, axes, s=20, mesh=None, **kwargs):
-    fig, ax = plt.subplots(1, 2, figsize=(9, 5))
+def two_view_plot_df(df, col, axes, s=20, mesh=None, label=None, **kwargs):
+    fig, ax = plt.subplots(1, 2, figsize=(8.5, 5), gridspec_kw={'width_ratios': (3,2)})
     if mesh:
         ax[0].scatter(mesh.vertices.T[0], mesh.vertices.T[1], c='gray', s=1, alpha=0.05)
         ax[1].scatter(mesh.vertices.T[2], mesh.vertices.T[1], c='gray', s=1, alpha=0.05)
     ax[0].scatter(*df[[axes[0],axes[1]]].values.T, c=df[col], s=s, **kwargs)
     ax[1].scatter(*df[[axes[2],axes[1]]].values.T, c=df[col], s=s, **kwargs)
 
-    divider = make_axes_locatable(ax[1])
+    divider = make_axes_locatable(ax[0])
     cax = divider.append_axes("right", size="5%", pad=0.1)
 
-    plt.colorbar(ax[1].collections[-1], cax=cax, label=col,)
+    plt.colorbar(ax[1].collections[-1], cax=cax, label=label or col,)
     for a in ax:
         a.set_axis_off()
+        a.invert_yaxis()
         a.set_aspect('equal')
     ax[0].set_title('Sagittal')
     ax[1].set_title('Coronal')

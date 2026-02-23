@@ -2,6 +2,10 @@
 	"version": 1,
 	"attached_datasets": [
 		{
+			"id": "3f9a2d41-0590-486a-ac76-edf5b40b855c",
+			"mount": "exaSPIM_648434_2023-08-29_15-00-36_fusion_2023-09-22"
+		},
+		{
 			"id": "752e23bc-cd12-4bbd-b473-c7b1e905b1f9",
 			"mount": "lc_meshes"
 		},
