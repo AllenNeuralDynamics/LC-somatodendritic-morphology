@@ -57,6 +57,7 @@ def load_morphology_and_soma(swc_file, axon_radius=0):
             axons = pd.DataFrame(neuron["axon"]).replace(-1, 0).assign(type=AXON)
             coords = ["x","y","z"]
             axons = axons[np.linalg.norm(axons[coords].values - soma[coords].values, axis=1) < axon_radius]
+            axons = axons[axons["allenId"].notna()]
             df = pd.concat([soma, dendrites, axons])
         else:
             df = pd.concat([soma, dendrites])

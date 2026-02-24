@@ -1,2 +1,4 @@
 metadata_version: 1
-name: LC soma/dendrites analysis
+name: LC somatodendritic morphology analysis
+authors:
+- name: Tom Chartrand
