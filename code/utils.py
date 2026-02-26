@@ -6,6 +6,7 @@ from glob import glob
 
 from neuron_morphology.constants import AXON, BASAL_DENDRITE, APICAL_DENDRITE, SOMA
 from neuron_morphology.morphology import Morphology
+from neuron_morphology.swc_io import morphology_from_swc
 
 
 def get_dend_radii(nodes):
@@ -37,7 +38,7 @@ def load_all(axon_radius=0):
     soma_df["subject"] = [x.split("/")[2].replace("exaspim_","").split("_")[0] for x in soma_df["file"]]
     return morphos, soma_df
 
-def load_morphology_and_soma(swc_file, axon_radius=0):
+def load_morphology_and_soma(swc_file, axon_radius=0, trim_to_ccf=True):
     # check if json or swc
     if swc_file.endswith('.json'):
         # Load the morphology from a JSON file
@@ -55,9 +56,15 @@ def load_morphology_and_soma(swc_file, axon_radius=0):
         soma = pd.DataFrame([soma]).assign(type=SOMA)
         if axon_radius > 0:
             axons = pd.DataFrame(neuron["axon"]).replace(-1, 0).assign(type=AXON)
-            coords = ["x","y","z"]
-            axons = axons[np.linalg.norm(axons[coords].values - soma[coords].values, axis=1) < axon_radius]
-            axons = axons[axons["allenId"].notna()]
+            # avoid collisions with dend numbering
+            offset = 1e9
+            axons["sampleNumber"] += offset
+            axons.loc[axons["parentNumber"]!=0, "parentNumber"] += offset
+            if axon_radius < np.inf:
+                coords = ["x","y","z"]
+                axons = axons[np.linalg.norm(axons[coords].values - soma[coords].values, axis=1) < axon_radius]
+            if trim_to_ccf:
+                axons = axons[axons["allenId"].notna()]
             df = pd.concat([soma, dendrites, axons])
         else:
             df = pd.concat([soma, dendrites])
@@ -66,34 +73,15 @@ def load_morphology_and_soma(swc_file, axon_radius=0):
             df["z"] = 11400-df["z"]
         records = df.rename(columns=columns).to_dict(orient="records")
         return Morphology(records, node_id_cb=lambda node: node["id"], parent_id_cb=lambda node: node["parent"]), soma
-
-def load_morphology(swc_file):
-    # check if json or swc
-    if swc_file.endswith('.json'):
-        # Load the morphology from a JSON file
-        with open(swc_file, 'r') as f:
-            data = json.load(f)
-        neuron = data["neurons"][0]
-        dendrites = pd.DataFrame(neuron["dendrite"]).replace(-1, 0).assign(type=BASAL_DENDRITE)
-        soma = neuron["soma"]
-        soma["sampleNumber"] = 0
-        soma["parentNumber"] = -1
-        columns = {
-            "sampleNumber": "id",
-            "parentNumber": "parent",
-        }
-        soma = pd.DataFrame([soma]).assign(type=SOMA)
-        df = pd.concat([soma, dendrites])
-        # mirror images of R hemisphere cells
-        df["z"] = np.minimum(df["z"], 11400-df["z"])
-        records = df.rename(columns=columns).to_dict(orient="records")
-        return Morphology(records, node_id_cb=lambda node: node["id"], parent_id_cb=lambda node: node["parent"])
-
     elif swc_file.endswith('.swc'):
         # Load the morphology from a SWC file
-        return morphology_from_swc(swc_file)
+        return morphology_from_swc(swc_file), soma
     else:
         raise ValueError("Unsupported file format. Please provide a SWC or JSON file.")
+
+def load_morphology(swc_file, axon_radius=0, trim_to_ccf=True):
+    morph, _= load_morphology_and_soma(swc_file, axon_radius=axon_radius, trim_to_ccf=trim_to_ccf)
+    return morph
 
 
 import matplotlib.pyplot as plt
