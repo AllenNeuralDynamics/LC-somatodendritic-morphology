@@ -2,6 +2,10 @@
 	"version": 1,
 	"attached_datasets": [
 		{
+			"id": "1708c61a-c6e8-4e3b-abaa-503b1061374d",
+			"mount": "exaSPIM_685222_2024-05-07_13-51-39_fusion_2024-07-29_17-28-26"
+		},
+		{
 			"id": "3f9a2d41-0590-486a-ac76-edf5b40b855c",
 			"mount": "exaSPIM_648434_2023-08-29_15-00-36_fusion_2023-09-22"
 		},
@@ -28,6 +32,14 @@
 		{
 			"id": "c8548568-22c1-4327-a2c9-410b9ccb33ba",
 			"mount": "exaSPIM_721332_reconstructions"
+		},
+		{
+			"id": "f6c7bb10-517e-46d4-97d2-e9b645e643af",
+			"mount": "exaSPIM_721332_2025-04-05_14-48-36_flatfield-correction_2025-04-24_20-06-12_fusion_2025-05-06_17-30-15"
+		},
+		{
+			"id": "fbde8ba6-e6ac-464b-bf67-9441d93e0101",
+			"mount": "exaSPIM_685221_2024-04-12_11-46-38_fusion_2024-07-22_21-00-15"
 		}
 	]
 }

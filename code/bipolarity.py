@@ -62,9 +62,16 @@ def plot_soma_all(somas_df, id):
         # patch axes are reversed
         # remaining mip axes are reversed by imshow to match physical
         mip = np.max(patch, axis=2-i).T
-        ax.imshow(mip, vmax=vmax, extent=[lower[axes[0]], upper[axes[0]], upper[axes[1]], lower[axes[1]]], cmap="cet_gray_r")
+        extent = [lower[axes[0]], upper[axes[0]], upper[axes[1]], lower[axes[1]]]
+        ax.imshow(mip, vmax=vmax, extent=extent, cmap="cet_gray_r")
         # ax.plot(*soma[axes], "ko")
         ax.plot(*nodes[axes], "g.", alpha=1, markersize=3)
+        if i==0:
+            r = 8
+            scale = 50
+            x0 = (r*extent[0]+extent[1])/(r+1)
+            y0 = (r*extent[2]+extent[3])/(r+1)
+            ax.plot([x0, x0+scale],[y0, y0], "k-", linewidth=2, label=f"{scale} μm")
         if soma_fit:
             ax.plot(*soma[axes], "bo")
             # ax.plot(*soma_offset[axes], "yo")
