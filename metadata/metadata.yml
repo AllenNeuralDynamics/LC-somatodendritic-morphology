@@ -1,4 +1,6 @@
 metadata_version: 1
 name: LC somatodendritic morphology analysis
+description: Analysis of dendritic and somatic properties of exaspim reconstructions
+  in the LC
 authors:
 - name: Tom Chartrand
