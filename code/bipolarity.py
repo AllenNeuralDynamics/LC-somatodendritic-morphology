@@ -23,7 +23,7 @@ def plot_soma_all(somas_df, id):
     # soma_xyz = somas_df.loc[id, ["x", "y", "z"]].values.astype("float")
 
     soma_voxel = img_util.to_voxels(soma_xyz, level)
-    path = fs.glob(f"s3://{img_prefixes[brain_id]}{level}")[0]
+    path = glob(f"/data/exaSPIM_{brain_id}*/fused.zarr/{level}")[0]
 
     img = zarr.open(path, mode='r', storage_options={'anon': True})
     lower = img_util.to_physical(soma_voxel-n/2, level)
@@ -44,7 +44,7 @@ def plot_soma_all(somas_df, id):
         soma_fit = False
     i = 2
 
-    swc = glob(f"/data/lc_image_space_reconstructions/*/{id}-*.swc")[0]
+    swc = glob(f"/data/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/{id}*.swc")[0]
     nodes = pd.read_csv(swc, sep=" ", names=["0","1","x","y","z","2","3"], usecols=["x","y","z"])
     nodes = nodes.query(
         f"x >= {lower[0]} & x <= {upper[0]} & "

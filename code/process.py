@@ -153,11 +153,7 @@ def run_shape_estimation(img, xyz, multiscale=2, patch_shape=(50, 50, 50)):
         "primary_axis": eigvecs[:, 2],
     }
     return result, blob, fitted_blob
-<div style="background-color: darkblue; padding: 10px; color: white;">
-
-## Section 1: Load Data
     
-</div>
 ### Initializations
 from glob import glob
 records = {}

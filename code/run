@@ -1,1 +1,5 @@
-python -c "import utils"
+#!/usr/bin/env bash
+set -ex
+
+python code/process.py
+python code/plot_3d_views.py

@@ -6,7 +6,7 @@ from glob import glob
 
 from neuron_morphology.constants import AXON, BASAL_DENDRITE, APICAL_DENDRITE, SOMA
 from neuron_morphology.morphology import Morphology
-from neuron_morphology.swc_io import morphology_from_swc
+from neuron_morphology.swc_io import read_swc
 
 
 def get_dend_radii(nodes):
@@ -24,7 +24,7 @@ def load_all(axon_radius=0):
     morphos = {}
     records = []
 
-    files = glob("/data/*/Complete_annotated/*.json")[:]
+    files = glob("/data/exaSPIM*reconstructions*/ccf_space_reconstructions/swc/*.swc")[:]
     for file in files:
         try:
             morphos[file], soma = load_morphology_and_soma(file, axon_radius=axon_radius)
@@ -75,9 +75,30 @@ def load_morphology_and_soma(swc_file, axon_radius=0, trim_to_ccf=True):
         return Morphology(records, node_id_cb=lambda node: node["id"], parent_id_cb=lambda node: node["parent"]), soma
     elif swc_file.endswith('.swc'):
         # Load the morphology from a SWC file
-        return morphology_from_swc(swc_file), soma
+        morph = morphology_from_swc(swc_file)
+        return morph, morph.get_soma()
     else:
         raise ValueError("Unsupported file format. Please provide a SWC or JSON file.")
+
+def morphology_from_swc(swc_path, flip_hemi=True):
+
+    swc_data = read_swc(swc_path, sep="\s+")
+    if flip_hemi and swc_data.iloc[0]["z"] > 5700:
+        swc_data["z"] = 11400-swc_data["z"]
+
+    nodes = swc_data.to_dict("records")
+    for node in nodes:
+        # unfortunately, pandas automatically promotes numeric types to float in to_dict
+        node["parent"] = int(node["parent"])
+        node["id"] = int(node["id"])
+        node["type"] = int(node["type"])
+
+    return Morphology(
+        nodes,
+        node_id_cb=lambda node: node["id"],
+        parent_id_cb=lambda node: node["parent"],
+    )
+
 
 def load_morphology(swc_file, axon_radius=0, trim_to_ccf=True):
     morph, _= load_morphology_and_soma(swc_file, axon_radius=axon_radius, trim_to_ccf=trim_to_ccf)
