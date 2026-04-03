@@ -132,11 +132,12 @@ def plot_morphology_lines(morphology, ax, coords='xy', node_types=None, **kwargs
     #     ax.plot([c[0][x], c[1][x]], [c[0][y], c[1][y]], **kwargs)
 
     x, y = coords
+    soma_id = morphology.get_soma()["id"]
     for s in morphology.get_segment_list():
         start = s[0]
         if node_types is not None and start["type"] not in node_types:
             continue
-        if 0 in morphology.ancestor_ids([start["id"]])[0]:
+        if soma_id in morphology.ancestor_ids([start["id"]])[0]:
         # if True:
             # segment list bug skips start nodes
             s = [morphology.parent_of(start)] + s

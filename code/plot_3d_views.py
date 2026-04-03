@@ -1,4 +1,4 @@
-
+# %%
 import numpy as np
 import utils as u
 
@@ -26,6 +26,7 @@ sm.set_array(data)
 clim = np.percentile(data, [5,95])
 sm.set_clim(clim)
 colors = sm.to_rgba(data)
+colors = dict(zip(order, colors))
 
 
 print(f"{clim=}")
@@ -46,11 +47,11 @@ lc_mesh = load_obj('/root/capsule/data/LC_percentile_meshes/new_core_mesh.obj')[
 
 # %%
 # Sagittal view (A-P vs D-V)
-def plot_projection(ids, axes, ax, node_types=None, mesh=True, somas=True):
+def plot_projection(ids, axes, ax, node_types=None, mesh=True, somas=True, mesh_sub=10):
     if mesh:
         # proj_ax = next("xyz"[i] for i in range(3) if i not in axes)
         xx = lc_mesh.vertices[:,[1,2,0]]
-        ax.scatter(xx[::10,axes[0]], xx[::10,axes[1]], c='gray', s=1, alpha=0.2)
+        ax.scatter(xx[::mesh_sub,axes[0]], xx[::mesh_sub,axes[1]], c='gray', s=1, alpha=0.1)
     ax.set_aspect('equal')
 
     ax.invert_yaxis()
@@ -62,12 +63,12 @@ def plot_projection(ids, axes, ax, node_types=None, mesh=True, somas=True):
     x, y = ["xyz"[i] for i in axes]
     for i, id in enumerate(ids):
         m = morphos[df.loc[id, "file"]]
-        u.plot_morphology_lines(m, ax, x+y, c=colors[i], linewidth=0.5, node_types=node_types)
+        u.plot_morphology_lines(m, ax, x+y, c=colors[id], linewidth=0.5, node_types=node_types)
         # xx = [n[x] for n in m.nodes()]
         # yy = [n[y] for n in m.nodes()]
         # ax.plot(xx, yy, ',', c=colors[i])
         if somas:
-            ax.plot(*df.loc[id, [x,y]], "o", markersize=7, markeredgecolor=colors[i], markerfacecolor='none')
+            ax.plot(*df.loc[id, [x,y]], "o", markersize=6, markeredgecolor=colors[id], markerfacecolor=colors[id])
 
 
 # %%
@@ -88,6 +89,7 @@ ax2.set_xlabel("L-M")
 
 fig.savefig("/results/fig_s6a_dendrites_dv_colors.pdf")
 
+# %%
 # dendrites subset
 fig, (ax1, ax2) = plt.subplots(
     1, 2,figsize=(15, 7),
@@ -97,21 +99,46 @@ ids = [
     "N023-685222",
     "N047-685221",
     "N065-685221",
-    "N022-648434",
-    "N045-685221",
-    "N059-685221",
+    "N037-685221", 
+    "N055-685221",
+    "N024-685222"
 ]
-plot_projection(ids, [0,1], ax1, node_types=node_types)
+plot_projection(ids, [0,1], ax1, node_types=node_types, mesh_sub=1)
 ylim=[6000, 3400]
 ax1.set_ylim(ylim)
 ax1.set_ylabel("D-V")
 ax1.set_xlabel("A-P")
-plot_projection(ids, [2,1], ax2, node_types=node_types)
+plot_projection(ids, [2,1], ax2, node_types=node_types, mesh_sub=1)
 ax2.set_ylim(ylim)
 ax2.set_xlabel("L-M")
 
+fig.savefig("/results/fig_2_6dendrites_dv_colors.svg")
 fig.savefig("/results/fig_2_6dendrites_dv_colors.pdf")
+# %%
+# dendrites subset
+fig, (ax1, ax2) = plt.subplots(
+    1, 2,figsize=(15, 7),
+)
+node_types=[u.BASAL_DENDRITE]
+ids = [
+    "N023-685222",
+    "N047-685221",
+    "N065-685221",
+    "N037-685221", 
+    "N012-685222",
+    "N024-685222"
+]
+plot_projection(ids, [0,1], ax1, node_types=node_types, mesh_sub=1)
+ylim=[6000, 3400]
+ax1.set_ylim(ylim)
+ax1.set_ylabel("D-V")
+ax1.set_xlabel("A-P")
+plot_projection(ids, [2,1], ax2, node_types=node_types, mesh_sub=1)
+ax2.set_ylim(ylim)
+ax2.set_xlabel("L-M")
 
+fig.savefig("/results/fig_2_6dendrites_dv_colors_N012.svg")
+fig.savefig("/results/fig_2_6dendrites_dv_colors_N012.pdf")
 # %%
 morphos, soma_df = u.load_all(axon_radius=1e9)
 
