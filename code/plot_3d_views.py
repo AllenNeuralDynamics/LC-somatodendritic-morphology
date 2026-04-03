@@ -99,9 +99,9 @@ ids = [
     "N023-685222",
     "N047-685221",
     "N065-685221",
-    "N037-685221", 
-    "N055-685221",
-    "N024-685222"
+    "N022-648434",
+    "N045-685221",
+    "N059-685221",
 ]
 plot_projection(ids, [0,1], ax1, node_types=node_types, mesh_sub=1)
 ylim=[6000, 3400]
@@ -114,33 +114,6 @@ ax2.set_xlabel("L-M")
 
 fig.savefig("/results/fig_2_6dendrites_dv_colors.svg")
 fig.savefig("/results/fig_2_6dendrites_dv_colors.pdf")
-# %%
-# dendrites subset
-fig, (ax1, ax2) = plt.subplots(
-    1, 2,figsize=(15, 7),
-)
-node_types=[u.BASAL_DENDRITE]
-ids = [
-    "N023-685222",
-    "N047-685221",
-    "N065-685221",
-    "N037-685221", 
-    "N012-685222",
-    "N024-685222"
-]
-plot_projection(ids, [0,1], ax1, node_types=node_types, mesh_sub=1)
-ylim=[6000, 3400]
-ax1.set_ylim(ylim)
-ax1.set_ylabel("D-V")
-ax1.set_xlabel("A-P")
-plot_projection(ids, [2,1], ax2, node_types=node_types, mesh_sub=1)
-ax2.set_ylim(ylim)
-ax2.set_xlabel("L-M")
-
-fig.savefig("/results/fig_2_6dendrites_dv_colors_N012.svg")
-fig.savefig("/results/fig_2_6dendrites_dv_colors_N012.pdf")
-# %%
-morphos, soma_df = u.load_all(axon_radius=1e9)
 
 # %%
 # full axons
