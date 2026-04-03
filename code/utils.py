@@ -33,7 +33,7 @@ def load_all(axon_radius=0):
         except KeyError as e:
             pass
 
-    soma_df = pd.concat(records)
+    soma_df = pd.DataFrame.from_records(records)
     soma_df["zz"] = np.minimum(soma_df["z"], 11400-soma_df["z"])
     soma_df["subject"] = [x.split("/")[2].replace("exaspim_","").split("_")[0] for x in soma_df["file"]]
     return morphos, soma_df

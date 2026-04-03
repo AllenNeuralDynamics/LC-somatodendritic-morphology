@@ -7,13 +7,9 @@ import colorcet as cc
 from glob import glob
 import pandas as pd
 from aind_exaspim_soma_detection.utils import img_util, util
+from utils import read_swc
 
 
-from s3fs import S3FileSystem
-
-img_prefixes = util.read_json("/root/capsule/data/exaspim_image_prefixes.json")
-
-fs = S3FileSystem(anon=True)
 def plot_soma_all(somas_df, id):
     n = 250
     level = 0
@@ -25,7 +21,7 @@ def plot_soma_all(somas_df, id):
     soma_voxel = img_util.to_voxels(soma_xyz, level)
     path = glob(f"/data/exaSPIM_{brain_id}*/fused.zarr/{level}")[0]
 
-    img = zarr.open(path, mode='r', storage_options={'anon': True})
+    img = zarr.open(path, mode='r')
     lower = img_util.to_physical(soma_voxel-n/2, level)
     upper = img_util.to_physical(soma_voxel+n/2, level)
 
@@ -45,7 +41,7 @@ def plot_soma_all(somas_df, id):
     i = 2
 
     swc = glob(f"/data/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/{id}*.swc")[0]
-    nodes = pd.read_csv(swc, sep=" ", names=["0","1","x","y","z","2","3"], usecols=["x","y","z"])
+    nodes = read_swc(swc, sep="\s+")
     nodes = nodes.query(
         f"x >= {lower[0]} & x <= {upper[0]} & "
         f"y >= {lower[1]} & y <= {upper[1]} & "

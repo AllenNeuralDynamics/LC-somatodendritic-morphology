@@ -157,9 +157,9 @@ def run_shape_estimation(img, xyz, multiscale=2, patch_shape=(50, 50, 50)):
 ### Initializations
 from glob import glob
 records = {}
-for swc in glob("/data/lc_image_space_reconstructions/*/*.swc")[:] + glob("/data/lc_image_space_new/*/*.swc"):
+for swc in glob(f"/data/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/*.swc"):
     id = swc.split("/")[-1][:11]
-    soma = pd.read_csv(swc, sep=" ", nrows=1, names=["0","1","x","y","z","2","3"], usecols=["x","y","z"])
+    soma = pd.read_csv(swc, sep="\s+", comment="#", nrows=1, names=["0","1","x","y","z","2","3"], usecols=["x","y","z"])
     record = soma.iloc[0].to_dict()
     # overwrite old with new
     record["id"] = id
@@ -168,20 +168,16 @@ for swc in glob("/data/lc_image_space_reconstructions/*/*.swc")[:] + glob("/data
 
 somas_df = pd.DataFrame.from_records(list(records.values()), index="id")
 somas_df["brain"] = somas_df.index.to_series().apply(lambda x: x.split("-")[-1])
-somas_df.head()
+
 ### Images
 import zarr
-from s3fs import S3FileSystem
 
 multiscale=2
-img_prefixes = util.read_json("/root/capsule/data/exaspim_image_prefixes.json")
-
-fs = S3FileSystem(anon=True)
 imgs = dict()
 for brain_id in somas_df["brain"].unique():
         # imgs[brain_id] = img_util.open_img(img_prefixes[brain_id] + str(multiscale))
-    path = fs.glob(f"s3://{img_prefixes[brain_id] + str(multiscale)}")[0]
-    imgs[brain_id] = zarr.open(path, mode='r', storage_options={'anon': True})
+    path = glob(f"/data/exaSPIM_{brain_id}*/fused.zarr/{multiscale}")[0]
+    imgs[brain_id] = zarr.open(path, mode='r')
 
 ### Process Dataset
 
@@ -212,3 +208,45 @@ double_cells = [
 df = pd.DataFrame(results).set_index("id").join(somas_df[["path", "brain"]])
 df.loc[double_cells, ["radii", "volume", "rsquared", "primary_axis"]] = np.nan
 df.to_csv("/scratch/LC_soma_shapes.csv")
+
+
+#plots
+import bipolarity
+from utils import morphology_from_swc
+
+names = ["aligned_bipolar_frac","aligned_bipolarity","abs_bipolarity", "cos_primary_axis"]
+names_offset = [x+"_offset" for x in names]
+df[names] = None
+df[names_offset] = None
+df["num_stems"] = None
+
+for id in tqdm(df.index):
+    swc = df.loc[id, "path"]
+    morph = morphology_from_swc(swc)
+    r2 = 50
+    stems = bipolarity.intersection_points(morph, cutoff=r2)
+    duplicates = []
+    for i, stem in enumerate(stems[:len(stems)-1]):
+        for j in range(i+1, len(stems)):
+            if np.allclose(stem, stems[j], atol=2):
+                duplicates.append(j)
+    if len(duplicates) > 0:
+        print(f"Removing {len(duplicates)} duplicate stems for {id}")
+        stems = [s for i, s in enumerate(stems) if i not in duplicates]
+        print(f"{len(stems)} stems remain after removing duplicates")
+    df.loc[id, "num_stems"] = len(stems)
+
+    soma = np.array(df.loc[id, "soma"])
+    primary_axis = np.array(df.loc[id, "primary_axis"])
+    df.loc[id, names] = bipolarity.get_bipolarity(soma, stems, primary_axis, cos2_cutoff=0.5)
+
+ids = df.sort_values("abs_bipolarity", ascending=False).index.values
+inds = [1, 40, 82, 129]
+# inds=[1]
+for i in inds:
+    # print(i)
+    bipolarity.plot_soma_all(df, ids[i])
+    # plt.suptitle(f"{ids[i]}, b={df.loc[ids[i], 'abs_bipolarity']:.2f}")
+    plt.suptitle(f"b={df.loc[ids[i], 'abs_bipolarity']:.2f}", ha="left", x=0.02)
+    plt.savefig(f"/results/fig_s6b_bipolarity_image_{i}.svg")
+    plt.show()

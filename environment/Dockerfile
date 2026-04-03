@@ -1,17 +1,17 @@
-# hash:sha256:a856dbf8b204b5d0e11f6effb82e0314528dc55ef61ec683b096d9d7d1bdc8dd
+# hash:sha256:c94fc7481774c5efb87384077bfc1e77708ccd55c15938c8b4e933dcb224eb7e
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GIT_ASKPASS
-COPY git-askpass /
+COPY git-ask-pass /
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libgl1=1.4.0-1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install -U --no-cache-dir --upgrade-strategy=only-if-needed \
+RUN pip install -U --no-cache-dir \
     allensdk==2.16.2 \
     brainrender==2.1.16 \
     colorcet==3.1.0 \

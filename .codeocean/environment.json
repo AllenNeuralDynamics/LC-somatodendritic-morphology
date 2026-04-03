@@ -68,9 +68,7 @@
 					"version": "2.18.2"
 				}
 			],
-			"options": {
-				"upgrade_strategy": "only-if-needed"
-			},
+			"options": {},
 			"pre_install_options": {}
 		}
 	}

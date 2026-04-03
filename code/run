@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 set -ex
 
-python code/process.py
-python code/plot_3d_views.py
+python plot_3d_views.py
+python process.py
+
+jupyter nbconvert \
+	--to 'html' \
+	--ExecutePreprocessor.allow_errors=True \
+	--ExecutePreprocessor.timeout=-1 \
+	--FilesWriter.build_directory=../results \
+	--execute soma_asymmetry.ipynb
