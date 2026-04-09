@@ -24,7 +24,7 @@ def load_all(axon_radius=0):
     morphos = {}
     records = []
 
-    files = glob("/data/exaSPIM*reconstructions*/ccf_space_reconstructions/swc/*.swc")[:]
+    files = glob("/data/LC_Snapshots/exaSPIM*reconstructions*/ccf_space_reconstructions/swc/*.swc")[:]
     for file in files:
         try:
             morphos[file], soma = load_morphology_and_soma(file, axon_radius=axon_radius)

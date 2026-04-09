@@ -42,7 +42,7 @@ from vedo.file_io import load_obj
 
 # 
 # Load mesh
-lc_mesh = load_obj('/root/capsule/data/LC_percentile_meshes/new_core_mesh.obj')[0]
+lc_mesh = load_obj('/data/LC_percentile_meshes/new_core_mesh.obj')[0]
 # lc_mesh = load_obj('/root/capsule/data/lc_meshes/20250418_transformed_remesh_10.obj')
 
 # %%

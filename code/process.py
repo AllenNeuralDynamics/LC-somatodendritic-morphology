@@ -157,7 +157,7 @@ def run_shape_estimation(img, xyz, multiscale=2, patch_shape=(50, 50, 50)):
 ### Initializations
 from glob import glob
 records = {}
-for swc in glob(f"/data/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/*.swc"):
+for swc in glob(f"/data/LC_Snapshots/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/*.swc"):
     id = swc.split("/")[-1][:11]
     soma = pd.read_csv(swc, sep="\s+", comment="#", nrows=1, names=["0","1","x","y","z","2","3"], usecols=["x","y","z"])
     record = soma.iloc[0].to_dict()
@@ -242,11 +242,26 @@ for id in tqdm(df.index):
 
 ids = df.sort_values("abs_bipolarity", ascending=False).index.values
 inds = [1, 40, 82, 129]
-# inds=[1]
 for i in inds:
     # print(i)
     bipolarity.plot_soma_all(df, ids[i])
     # plt.suptitle(f"{ids[i]}, b={df.loc[ids[i], 'abs_bipolarity']:.2f}")
     plt.suptitle(f"b={df.loc[ids[i], 'abs_bipolarity']:.2f}", ha="left", x=0.02)
-    plt.savefig(f"/results/fig_s6b_bipolarity_image_{i}.svg")
+    plt.savefig(f"/scratch/bipolarity_image_{i}.svg")
+    plt.savefig(f"/results/fig_s6b_bipolarity_image_{i}.pdf")
     plt.show()
+
+# tiled figure
+import svgutils.compose as svg
+i=-1
+letters = "abcdefghijkl"
+def panel(path, scale=1): 
+    global i
+    i+=1
+    # return svg.Panel(svg.SVG(path).scale(scale), svg.Text(letters[i], 10, 10, size=14, weight='bold'))
+    return svg.Panel(svg.SVG(path).scale(scale))
+
+fig = svg.Figure(*100*np.array([6, 8]),
+    *[panel(f"/scratch/bipolarity_image_{i}.svg", scale=1) for i in inds]
+).tile(1,4)
+fig.save("/results/fig_s6b_bipolarity_gallery.svg")

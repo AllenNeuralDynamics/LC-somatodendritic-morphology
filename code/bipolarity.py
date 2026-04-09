@@ -40,7 +40,7 @@ def plot_soma_all(somas_df, id):
         soma_fit = False
     i = 2
 
-    swc = glob(f"/data/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/{id}*.swc")[0]
+    swc = glob(f"/data/LC_Snapshots/exaSPIM*reconstructions*/specimen_space_reconstructions/swc/{id}*.swc")[0]
     nodes = read_swc(swc, sep="\s+")
     nodes = nodes.query(
         f"x >= {lower[0]} & x <= {upper[0]} & "
