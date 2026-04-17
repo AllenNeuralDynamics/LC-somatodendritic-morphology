@@ -2,28 +2,12 @@
 	"version": 1,
 	"attached_datasets": [
 		{
-			"id": "1708c61a-c6e8-4e3b-abaa-503b1061374d",
-			"mount": "exaSPIM_685222_2024-05-07_13-51-39_fusion_2024-07-29_17-28-26"
-		},
-		{
-			"id": "2e0359ab-d64c-44ed-80d6-4c15c7109073",
+			"id": "b43a672f-3f1c-43a3-a732-7aa9f68b741a",
 			"mount": "LC_Snapshots"
-		},
-		{
-			"id": "3f9a2d41-0590-486a-ac76-edf5b40b855c",
-			"mount": "exaSPIM_648434_2023-08-29_15-00-36_fusion_2023-09-22"
 		},
 		{
 			"id": "c712751d-f744-4fe8-9657-93a7084eab22",
 			"mount": "LC_percentile_meshes"
-		},
-		{
-			"id": "f6c7bb10-517e-46d4-97d2-e9b645e643af",
-			"mount": "exaSPIM_721332_2025-04-05_14-48-36_flatfield-correction_2025-04-24_20-06-12_fusion_2025-05-06_17-30-15"
-		},
-		{
-			"id": "fbde8ba6-e6ac-464b-bf67-9441d93e0101",
-			"mount": "exaSPIM_685221_2024-04-12_11-46-38_fusion_2024-07-22_21-00-15"
 		}
 	]
 }
