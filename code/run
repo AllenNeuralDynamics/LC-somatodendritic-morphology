@@ -2,7 +2,7 @@
 set -ex
 
 python plot_3d_views.py
-python process.py
+python run_soma_quantification.py
 
 jupyter nbconvert \
 	--to 'html' \
