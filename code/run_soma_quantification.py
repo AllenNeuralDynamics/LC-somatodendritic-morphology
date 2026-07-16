@@ -176,7 +176,7 @@ multiscale=2
 imgs = dict()
 for brain_id in somas_df["brain"].unique():
         # imgs[brain_id] = img_util.open_img(img_prefixes[brain_id] + str(multiscale))
-    path = glob(f"/data/exaSPIM_{brain_id}*/fused.zarr/{multiscale}")[0]
+    path = glob(f"/data/exaSPIM-fused-images/exaSPIM_{brain_id}*/fused.zarr/{multiscale}")[0]
     imgs[brain_id] = zarr.open(path, mode='r')
 
 ### Process Dataset
@@ -211,8 +211,8 @@ df.to_csv("/scratch/LC_soma_shapes.csv")
 
 
 #plots
-import bipolarity
-from utils import morphology_from_swc
+import utils.bipolarity as bipolarity
+from utils.morph import morphology_from_swc
 
 names = ["aligned_bipolar_frac","aligned_bipolarity","abs_bipolarity", "cos_primary_axis"]
 names_offset = [x+"_offset" for x in names]

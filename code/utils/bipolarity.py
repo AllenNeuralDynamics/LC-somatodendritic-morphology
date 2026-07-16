@@ -7,7 +7,7 @@ import colorcet as cc
 from glob import glob
 import pandas as pd
 from aind_exaspim_soma_detection.utils import img_util, util
-from utils import read_swc
+from .morph import read_swc
 
 
 def plot_soma_all(somas_df, id):

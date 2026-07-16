@@ -1,6 +1,6 @@
 # %%
 import numpy as np
-import utils as u
+import utils.morph as u
 
 # %%
 morphos, soma_df = u.load_all(axon_radius=0)
