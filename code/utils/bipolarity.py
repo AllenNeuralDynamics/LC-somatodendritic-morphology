@@ -19,7 +19,7 @@ def plot_soma_all(somas_df, id):
     # soma_xyz = somas_df.loc[id, ["x", "y", "z"]].values.astype("float")
 
     soma_voxel = img_util.to_voxels(soma_xyz, level)
-    path = glob(f"/data/exaSPIM_{brain_id}*/fused.zarr/{level}")[0]
+    path = glob(f"/data/exaSPIM-fused-images/exaSPIM_{brain_id}*/fused.zarr/{level}")[0]
 
     img = zarr.open(path, mode='r')
     lower = img_util.to_physical(soma_voxel-n/2, level)

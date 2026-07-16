@@ -2,16 +2,16 @@
 	"version": 1,
 	"attached_datasets": [
 		{
+			"id": "299fd5aa-1454-4b7a-968c-1e7d2c570d27",
+			"mount": "LC_percentile_meshes_2026-07-10_21-13-43"
+		},
+		{
 			"id": "a732f8b1-06ef-4d49-b315-585afeffcb80",
 			"mount": "exaSPIM-fused-images"
 		},
 		{
 			"id": "b43a672f-3f1c-43a3-a732-7aa9f68b741a",
 			"mount": "LC_Snapshots"
-		},
-		{
-			"id": "c712751d-f744-4fe8-9657-93a7084eab22",
-			"mount": "LC_percentile_meshes"
 		}
 	]
 }
