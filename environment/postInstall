@@ -37,5 +37,3 @@ else
 #   code-server --extensions-dir=/.vscode/extensions --install-extension detachhead.basedpyright
 fi
 
-DOTFILES=https://github.com/tmchartrand/codeocean_dotfiles.git
-sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/bin/ init $DOTFILES --apply
