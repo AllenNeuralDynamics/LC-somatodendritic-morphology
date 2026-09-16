@@ -1,4 +1,5 @@
-
+""" Quantify soma shape parameters by a 3D Gaussian fit, and save results to disk
+"""
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit
 from tqdm import tqdm
@@ -193,7 +194,8 @@ for id in tqdm(somas_df.index[:]):
     res["id"] = id
     results.append(res)
 
-
+# "Double" cells have an adjacent soma in close proximity
+# the image volume can't be accurately fit by a single gaussian, so we skip quantification
 double_cells = [
     "N022-648434",
     "N018-685221",
@@ -209,8 +211,7 @@ df = pd.DataFrame(results).set_index("id").join(somas_df[["path", "brain"]])
 df.loc[double_cells, ["radii", "volume", "rsquared", "primary_axis"]] = np.nan
 df.to_csv("/scratch/LC_soma_shapes.csv")
 
-
-#plots
+# Bipolarity metrics
 import utils.bipolarity as bipolarity
 from utils.morph import morphology_from_swc
 
@@ -220,6 +221,8 @@ df[names] = None
 df[names_offset] = None
 df["num_stems"] = None
 
+# loop over all neurons (with progress bar), 
+# find points 50um along each proximal dendrite and use these to calculate bipolarity metrics
 for id in tqdm(df.index):
     swc = df.loc[id, "path"]
     morph = morphology_from_swc(swc)
@@ -230,6 +233,7 @@ for id in tqdm(df.index):
         for j in range(i+1, len(stems)):
             if np.allclose(stem, stems[j], atol=2):
                 duplicates.append(j)
+    # check for and remove duplicates in case portions of dendrites are double-traced
     if len(duplicates) > 0:
         print(f"Removing {len(duplicates)} duplicate stems for {id}")
         stems = [s for i, s in enumerate(stems) if i not in duplicates]
@@ -240,6 +244,7 @@ for id in tqdm(df.index):
     primary_axis = np.array(df.loc[id, "primary_axis"])
     df.loc[id, names] = bipolarity.get_bipolarity(soma, stems, primary_axis, cos2_cutoff=0.5)
 
+# gallery plots of each soma, proximal dendrites, and bipolarity-related features
 ids = df.sort_values("abs_bipolarity", ascending=False).index.values
 inds = [1, 40, 82, 129]
 for i in inds:

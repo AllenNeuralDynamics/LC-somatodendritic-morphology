@@ -1,18 +1,19 @@
-# %%
+""" Generate and save 2D and 3D visualizations of LC cell dendrites and axons
+"""
 import numpy as np
 import utils.morph as u
 
-# %%
+
 morphos, soma_df = u.load_all(axon_radius=0)
 
-# %%
-# df = soma_df.query("x>10000 and y<5500").set_index("file")
+
+# filter out obviously non-LC reconstructions by soma coordinates
 df = soma_df.query("x>9500 and y<6000 and z>2000").copy()
 df["z"] = df["zz"]
 df["id"] = df["file"].map(lambda x: x.split("/")[-1][:-4])
 df = df.set_index("id")
 
-# %%
+
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
@@ -33,7 +34,7 @@ print(f"{clim=}")
 
 
 
-# %%
+
 import vedo
 # vedo.settings.default_backend= '2d'
 vedo.settings.default_backend= 'k3d'
@@ -42,10 +43,10 @@ from vedo.file_io import load_obj
 
 # 
 # Load mesh
-lc_mesh = load_obj('/data/LC_percentile_meshes/new_core_mesh.obj')[0]
+lc_mesh = load_obj('/data/LC_percentile_meshes_2026-07-10_21-13-43/core_mesh.obj')[0]
 # lc_mesh = load_obj('/root/capsule/data/lc_meshes/20250418_transformed_remesh_10.obj')
 
-# %%
+
 # Sagittal view (A-P vs D-V)
 def plot_projection(ids, axes, ax, node_types=None, mesh=True, somas=True, mesh_sub=10):
     if mesh:
@@ -71,7 +72,7 @@ def plot_projection(ids, axes, ax, node_types=None, mesh=True, somas=True, mesh_
             ax.plot(*df.loc[id, [x,y]], "o", markersize=6, markeredgecolor=colors[id], markerfacecolor=colors[id])
 
 
-# %%
+
 # dendrites
 fig, (ax1, ax2) = plt.subplots(
     1, 2,figsize=(15, 7),
@@ -89,7 +90,7 @@ ax2.set_xlabel("L-M")
 
 fig.savefig("/results/fig_s6a_dendrites_dv_colors.pdf")
 
-# %%
+
 # dendrites subset
 fig, (ax1, ax2) = plt.subplots(
     1, 2,figsize=(15, 7),
@@ -115,7 +116,7 @@ ax2.set_xlabel("L-M")
 fig.savefig("/results/fig_2_6dendrites_dv_colors.svg")
 fig.savefig("/results/fig_2_6dendrites_dv_colors.pdf")
 
-# %%
+
 # full axons
 fig, (ax1, ax2) = plt.subplots(
     1, 2,figsize=(15, 7),
