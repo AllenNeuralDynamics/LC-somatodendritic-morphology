@@ -176,7 +176,7 @@ multiscale=2
 imgs = dict()
 for brain_id in somas_df["brain"].unique():
         # imgs[brain_id] = img_util.open_img(img_prefixes[brain_id] + str(multiscale))
-    path = glob(f"/data/exaSPIM-fused-images/exaSPIM_{brain_id}*/fused.zarr/{multiscale}")[0]
+    path = glob(f"/data/exaSPIM-fused-images/exaSPIM_{brain_id}*/fused*.zarr/{multiscale}")[0]
     imgs[brain_id] = zarr.open(path, mode='r')
 
 ### Process Dataset
